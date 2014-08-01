@@ -10,14 +10,25 @@ Scrolling contributed by Nathan Chantrell http://nathan.chantrell.net/
 Updated 06/11/2013 to include the cursPos data in the sendString function
 sendString("string", col, row)
 
+Updated 07/28/2013 to accept some of the function names from the LiquidCrystal
+library and to use the Print class
+
 */
+
 #include "OLedI2C.h" 
 #include "Wire.h"
-#define OLED_Address 0x3c
+#define OLED_Address 0x3d
 #define OLED_Command_Mode 0x80
 #define OLED_Data_Mode 0x40
 
-OLedI2C::OLedI2C(){}
+#include <stdio.h>
+#include <string.h>
+#include <inttypes.h>
+#include "Arduino.h"
+
+OLedI2C::OLedI2C(){
+init();
+}
 OLedI2C::~OLedI2C(){}
 
 
@@ -76,15 +87,31 @@ void OLedI2C::init() {
  sendCommand(0x0C);  	// **** Turn on Display
  }
  
+ void OLedI2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize)
+ {
+ }
+
+ 
  void OLedI2C::cursPos(uint8_t col, uint8_t row)
  {
  int row_offsets[] = { 0x00, 0x40 };
  sendCommand(0x80 | (col + row_offsets[row]));
  }
  
+ void OLedI2C::setCursor(uint8_t col, uint8_t row)
+ {
+cursPos(col, row);
+ }
+ 
+ 
 void OLedI2C::clearLcd()
 {
 sendCommand(0x01);
+}
+
+void OLedI2C::clear()
+{
+clearLcd();
 }
 
 void OLedI2C::lcdOff()
@@ -92,9 +119,19 @@ void OLedI2C::lcdOff()
 sendCommand(0x08);  	// **** Turn on Off
 }
 
+void OLedI2C::noDisplay()
+{
+lcdOff();
+}
+
 void OLedI2C::lcdOn()
 {
 sendCommand(0x0C);  	// **** Turn on On
+}
+
+void OLedI2C::display()
+{
+lcdOn();
 }
 
  void OLedI2C::sendCommand(unsigned char command)
@@ -136,6 +173,7 @@ void OLedI2C::sendString(const char *String, uint8_t col, uint8_t row)
     i++;
   }
 }
+
 void OLedI2C::sendData(unsigned char data)
 {
   Wire.beginTransmission(OLED_Address);  	// **** Start I2C 
@@ -159,4 +197,8 @@ void OLedI2C::scrollString(char* message, byte row, unsigned int time)//written 
  sendString(buffer, 0, row); //Edited by PG tho include the cursor pos within the sendString command
  delay(time);
  }
+}
+
+inline size_t OLedI2C::write(uint8_t value) {
+ sendData(value);
 }
