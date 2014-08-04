@@ -1,27 +1,13 @@
 1602-OLED-Arduino-Library
 =========================
 
-wide.HK 1602 OLED Library
+wide.HK 1602 I2C OLED Library
 
-This Library is intended for the Wide.HK OLED 1602 display.
+This Library is intended for the Wide.HK OLED 1602 display, which is similar to the ASI-V-22616204P-IWI/M.
+Should work with any display using the US2066 controller in I2C mode.
 
-KEYWORDS
-
-OLedI2C		    KEYWORD1
-
-init		      KEYWORD2
-
-sendCommand	  KEYWORD2
-
-sendString	  KEYWORD2
-
-sendData	    KEYWORD2
-
-clearLcd	    KEYWORD2
-
-cursPos		    KEYWORD2
-
-scrollString	KEYWORD2 Writen by Nathan Chantrell http://nathan.chantrell.net
+Writen by Nathan Chantrell http://nathan.chantrell.net
+Modified by Tagno25
 
 Updated sendString to include cursPos data. sendString("String", col, row)
 Updated Library by adding sendFloat function, this allows a float value to be

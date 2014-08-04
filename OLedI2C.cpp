@@ -21,14 +21,7 @@ library and to use the Print class
 #define OLED_Command_Mode 0x80
 #define OLED_Data_Mode 0x40
 
-#include <stdio.h>
-#include <string.h>
-#include <inttypes.h>
-#include "Arduino.h"
-
-OLedI2C::OLedI2C(){
-init();
-}
+OLedI2C::OLedI2C(){}
 OLedI2C::~OLedI2C(){}
 
 
@@ -89,6 +82,68 @@ void OLedI2C::init() {
  
  void OLedI2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize)
  {
+   // *** I2C initial *** //
+ delay(100);
+ sendCommand(0x2A);	// **** Set "RE"=1	00101010B
+ sendCommand(0x71);
+ sendCommand(0x5C);
+ sendCommand(0x28);
+
+ sendCommand(0x08);	// **** Set Sleep Mode On
+ sendCommand(0x2A);	// **** Set "RE"=1	00101010B
+ sendCommand(0x79);	// **** Set "SD"=1	01111001B
+
+ sendCommand(0xD5);
+ sendCommand(0x70);
+ sendCommand(0x78);	// **** Set "SD"=0  01111000B
+
+ if (lines == (1||2)){
+	// **** Set 1 or 2 line(0x08)
+	sendCommand(0x08);
+ } else if (lines == (3||4)){
+	// **** Set 3 or 4 line(0x09)
+ 	sendCommand(0x09);
+ } else {
+	// **** Set 5-dot?, 1 or 2 line(0x08)
+ 	sendCommand(0x08);
+ }
+ 
+ sendCommand(0x06);	// **** Set Com31-->Com0  Seg0-->Seg99
+
+ // **** Set OLED Characterization *** //
+ sendCommand(0x2A);  	// **** Set "RE"=1 
+ sendCommand(0x79);  	// **** Set "SD"=1
+
+ // **** CGROM/CGRAM Management *** //
+ sendCommand(0x72);  	// **** Set ROM
+ sendCommand(0x00);  	// **** Set ROM A and 8 CGRAM
+
+
+ sendCommand(0xDA); 	// **** Set Seg Pins HW Config
+ sendCommand(0x10);   
+
+ sendCommand(0x81);  	// **** Set Contrast
+ sendCommand(0xFF); 
+
+ sendCommand(0xDB);  	// **** Set VCOM deselect level
+ sendCommand(0x30);  	// **** VCC x 0.83
+
+ sendCommand(0xDC);  	// **** Set gpio - turn EN for 15V generator on.
+ sendCommand(0x03);
+
+ sendCommand(0x78);  	// **** Exiting Set OLED Characterization
+ sendCommand(0x28); 
+ sendCommand(0x2A); 
+ //sendCommand(0x05); 	// **** Set Entry Mode
+ sendCommand(0x06); 	// **** Set Entry Mode
+ sendCommand(0x08);  
+ sendCommand(0x28); 	// **** Set "IS"=0 , "RE" =0 //28
+ sendCommand(0x01); 
+ sendCommand(0x80); 	// **** Set DDRAM Address to 0x80 (line 1 start)
+
+ delay(100);
+ sendCommand(0x0C);  	// **** Turn on Display
+ 
  }
 
  
